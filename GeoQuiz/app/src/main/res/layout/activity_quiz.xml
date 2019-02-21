@@ -41,13 +41,22 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btn_cheat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cheat_button"
+        app:layout_constraintTop_toBottomOf="@+id/ll_button_group"
+        app:layout_constraintLeft_toLeftOf="@+id/ll_button_group"
+        app:layout_constraintRight_toRightOf="@+id/ll_button_group" />
+
     <LinearLayout
         android:id="@+id/ll_button_prev_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/ll_button_group"
-        app:layout_constraintLeft_toLeftOf="@+id/ll_button_group"
-        app:layout_constraintRight_toRightOf="@+id/ll_button_group" >
+        app:layout_constraintTop_toBottomOf="@+id/btn_cheat"
+        app:layout_constraintLeft_toLeftOf="@+id/btn_cheat"
+        app:layout_constraintRight_toRightOf="@+id/btn_cheat" >
 
         <ImageButton
             android:id="@+id/btn_prev"

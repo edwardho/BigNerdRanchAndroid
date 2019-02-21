@@ -1,6 +1,9 @@
 package android.bignerdranch.com;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,9 +16,12 @@ public class QuizActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "Quizactivity";
     private static final String KEY_INDEX = "index";
+    private static final String CHEAT_INDEX = "cheat";
+    private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button mTrueButton;
     private Button mFalseButton;
+    private Button mCheatButton;
     private ImageButton mPrevImageButton;
     private ImageButton mNextImageButton;
     private TextView mStatementTextView;
@@ -30,8 +36,10 @@ public class QuizActivity extends AppCompatActivity {
     };
 
     private Boolean[] mAnswers = new Boolean[mStatementBank.length];
+    private boolean[] mDidCheat = new boolean[mStatementBank.length];
 
     private int mCurrentIndex = 0;
+    private boolean mIsCheater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +50,10 @@ public class QuizActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mDidCheat = savedInstanceState.getBooleanArray(CHEAT_INDEX);
         }
+
+        checkIfCheater();
 
         // Configure the true/false statement
         mStatementTextView = (TextView) findViewById(R.id.tv_quiz_statement);
@@ -50,6 +61,9 @@ public class QuizActivity extends AppCompatActivity {
         // Configure the True and False Buttons
         mTrueButton = (Button) findViewById(R.id.btn_true);
         mFalseButton = (Button) findViewById(R.id.btn_false);
+
+        // Configure the Cheat Button
+        mCheatButton = (Button) findViewById(R.id.btn_cheat);
 
         // Configure the Prev and Next Buttons
         mPrevImageButton = (ImageButton) findViewById(R.id.btn_prev);
@@ -88,6 +102,18 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        // Cheat button onClickListener
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Cheat clicked
+                // Start cheat activity
+                boolean answerIsTrue = mStatementBank[mCurrentIndex].isAnswerTrue();
+                Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                startActivityForResult(intent, REQUEST_CODE_CHEAT);
+            }
+        });
+
         // Prev Button onClickListener
         mPrevImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +123,7 @@ public class QuizActivity extends AppCompatActivity {
                 if (mCurrentIndex < 0) {
                     mCurrentIndex = mStatementBank.length-1;
                 }
+                checkIfCheater();
                 updateQuestion();
             }
         });
@@ -107,6 +134,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // Next clicked
                 mCurrentIndex = (mCurrentIndex + 1) % mStatementBank.length;
+                checkIfCheater();
                 updateQuestion();
             }
         });
@@ -118,6 +146,21 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         Log.i(LOG_TAG, "onSaveInstanceState(Bundle) called");
         outState.putInt(KEY_INDEX, mCurrentIndex);
+        outState.putBooleanArray(CHEAT_INDEX, mDidCheat);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            if (data == null) {
+                return;
+            }
+            mIsCheater = CheatActivity.wasAnswerShown(data);
+            mDidCheat[mCurrentIndex] = true;
+        }
     }
 
     @Override
@@ -174,16 +217,30 @@ public class QuizActivity extends AppCompatActivity {
 
         int messageResId = 0;
 
-        if (userPressedTrue == answerIsTrue) {
-            mAnswers[mCurrentIndex] = true;
-            messageResId = R.string.correct_toast;
+        if (mIsCheater) {
+            messageResId = R.string.judgement_toast;
         }
         else {
-            mAnswers[mCurrentIndex] = false;
-            messageResId = R.string.incorrect_toast;
+            if (userPressedTrue == answerIsTrue) {
+                mAnswers[mCurrentIndex] = true;
+                messageResId = R.string.correct_toast;
+            }
+            else {
+                mAnswers[mCurrentIndex] = false;
+                messageResId = R.string.incorrect_toast;
+            }
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+    }
+
+    private void checkIfCheater() {
+        if (mDidCheat[mCurrentIndex] == true) {
+            mIsCheater = true;
+        }
+        else {
+            mIsCheater = false;
+        }
     }
 
     private void checkScore() {
