@@ -1,11 +1,11 @@
 package android.bignerdranch.com;
 
-public class Question {
+public class Statement {
 
     private int mTextResId;
     private boolean mAnswerTrue;
 
-    public Question(int textResId, boolean answerTrue) {
+    public Statement(int textResId, boolean answerTrue) {
         mTextResId = textResId;
         mAnswerTrue = answerTrue;
     }
