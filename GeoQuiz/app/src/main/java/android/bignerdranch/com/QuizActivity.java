@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,7 +12,8 @@ public class QuizActivity extends AppCompatActivity {
 
     private Button mTrueButton;
     private Button mFalseButton;
-    private Button mNextButton;
+    private ImageButton mPrevImageButton;
+    private ImageButton mNextImageButton;
     private TextView mStatementTextView;
 
     private Question[] mStatementBank = new Question[] {
@@ -32,6 +34,14 @@ public class QuizActivity extends AppCompatActivity {
 
         // Configure the true/false statement
         mStatementTextView = (TextView) findViewById(R.id.tv_quiz_statement);
+        mStatementTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TextView clicked, show next statement
+                mCurrentIndex = (mCurrentIndex + 1) % mStatementBank.length;
+                updateQuestion();
+            }
+        });
         updateQuestion();
 
         // Configure the True Button
@@ -54,9 +64,23 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        // Configure the Prev Button
+        mPrevImageButton = (ImageButton) findViewById(R.id.btn_prev);
+        mPrevImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Prev clicked
+                mCurrentIndex = (mCurrentIndex - 1) % mStatementBank.length;
+                if (mCurrentIndex < 0) {
+                    mCurrentIndex = mStatementBank.length-1;
+                }
+                updateQuestion();
+            }
+        });
+
         // Configure the Next Button
-        mNextButton = (Button) findViewById(R.id.btn_next);
-        mNextButton.setOnClickListener(new View.OnClickListener() {
+        mNextImageButton = (ImageButton) findViewById(R.id.btn_next);
+        mNextImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Next clicked

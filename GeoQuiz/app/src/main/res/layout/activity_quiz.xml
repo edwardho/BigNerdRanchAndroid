@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:context=".QuizActivity">
+    tools:context=".QuizActivity" >
 
     <TextView
         android:id="@+id/tv_quiz_statement"
@@ -16,7 +16,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:padding="24dp"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal" />
 
     <LinearLayout
         android:id="@+id/ll_button_group"
@@ -25,7 +25,7 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@+id/tv_quiz_statement"
         app:layout_constraintLeft_toLeftOf="@+id/tv_quiz_statement"
-        app:layout_constraintRight_toRightOf="@+id/tv_quiz_statement">
+        app:layout_constraintRight_toRightOf="@+id/tv_quiz_statement" >
 
         <Button
             android:id="@+id/btn_true"
@@ -41,13 +41,30 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_next"
+    <LinearLayout
+        android:id="@+id/ll_button_prev_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/next_button"
         app:layout_constraintTop_toBottomOf="@+id/ll_button_group"
         app:layout_constraintLeft_toLeftOf="@+id/ll_button_group"
-        app:layout_constraintRight_toRightOf="@+id/ll_button_group" />
+        app:layout_constraintRight_toRightOf="@+id/ll_button_group" >
+
+        <ImageButton
+            android:id="@+id/btn_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrow_left"
+            android:contentDescription="previous button" />
+
+        <ImageButton
+            android:id="@+id/btn_next"
+            android:layout_width="36dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrow_right"
+            android:contentDescription="next button" />
+
+    </LinearLayout>
+
+
 
 </android.support.constraint.ConstraintLayout>
