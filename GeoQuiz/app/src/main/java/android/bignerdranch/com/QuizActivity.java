@@ -40,6 +40,8 @@ public class QuizActivity extends AppCompatActivity {
 
     private int mCurrentIndex = 0;
     private boolean mIsCheater;
+    private int mCheatCount;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class QuizActivity extends AppCompatActivity {
         }
 
         checkIfCheater();
+        checkLimitCheats();
 
         // Configure the true/false statement
         mStatementTextView = (TextView) findViewById(R.id.tv_quiz_statement);
@@ -124,6 +127,7 @@ public class QuizActivity extends AppCompatActivity {
                     mCurrentIndex = mStatementBank.length-1;
                 }
                 checkIfCheater();
+                checkLimitCheats();
                 updateQuestion();
             }
         });
@@ -135,6 +139,7 @@ public class QuizActivity extends AppCompatActivity {
                 // Next clicked
                 mCurrentIndex = (mCurrentIndex + 1) % mStatementBank.length;
                 checkIfCheater();
+                checkLimitCheats();
                 updateQuestion();
             }
         });
@@ -240,6 +245,21 @@ public class QuizActivity extends AppCompatActivity {
         }
         else {
             mIsCheater = false;
+        }
+    }
+
+    private void checkLimitCheats() {
+        mCheatCount = 0;
+
+        for(boolean bool : mDidCheat) {
+            if (bool == true) {
+                mCheatCount++;
+            }
+        }
+        Toast.makeText(this, Integer.toString(mCheatCount), Toast.LENGTH_SHORT).show();
+
+        if (mCheatCount >= 3) {
+            mCheatButton.setVisibility(View.GONE);
         }
     }
 

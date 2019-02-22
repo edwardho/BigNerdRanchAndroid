@@ -41,4 +41,14 @@
         app:layout_constraintTop_toBottomOf="@id/tv_answer"
         android:gravity="center" />
 
+    <TextView
+        android:id="@+id/tv_APILevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="API LEVEL"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_show_answer"
+        android:gravity="center_horizontal" />
+
 </android.support.constraint.ConstraintLayout>
