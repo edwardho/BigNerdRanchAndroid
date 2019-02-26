@@ -10,12 +10,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class CrimeListFragment extends Fragment {
+
+    private static final int VIEWTYPE_REQUIRES_POLICE = 1;
+    private static final int VIEWTYPE_DOESNT_REQUIRE_POLICE = 0;
+
 
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
@@ -38,6 +45,7 @@ public class CrimeListFragment extends Fragment {
         private Crime mCrime;
         private TextView mTitleTextView;
         private TextView mDateTextView;
+        private ImageView mSolvedImageView;
 
         public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_crime, parent, false));
@@ -45,12 +53,18 @@ public class CrimeListFragment extends Fragment {
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.tv_crime_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.tv_crime_date);
+            mSolvedImageView = (ImageView) itemView.findViewById(R.id.iv_solved);
         }
 
         public void bind(Crime crime) {
             mCrime = crime;
+
+            Date date = mCrime.getDate();
+            String formattedDate = DateFormat.getDateInstance(DateFormat.FULL).format(date);
+
             mTitleTextView.setText(mCrime.getTitle());
-            mDateTextView.setText(mCrime.getDate().toString());
+            mDateTextView.setText(formattedDate);
+            mSolvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
         }
 
         @Override
@@ -64,6 +78,7 @@ public class CrimeListFragment extends Fragment {
         private Crime mCrime;
         private TextView mTitleTextView;
         private TextView mDateTextView;
+        private ImageView mSolvedImageView;
         private Button mContactPoliceButton;
 
         public PoliceCrimeHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -71,6 +86,7 @@ public class CrimeListFragment extends Fragment {
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.tv_crime_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.tv_crime_date);
+            mSolvedImageView = (ImageView) itemView.findViewById(R.id.iv_solved);
             mContactPoliceButton = (Button) itemView.findViewById(R.id.btn_contact_police);
 
             itemView.setOnClickListener(this);
@@ -79,9 +95,15 @@ public class CrimeListFragment extends Fragment {
 
         public void bind(Crime crime) {
             mCrime = crime;
+
+            Date date = mCrime.getDate();
+            String formattedDate = DateFormat.getDateInstance(DateFormat.FULL).format(date);
+
             mTitleTextView.setText(mCrime.getTitle());
-            mDateTextView.setText(mCrime.getDate().toString());
+            mDateTextView.setText(formattedDate);
             mContactPoliceButton.setEnabled(true);
+            mContactPoliceButton.setVisibility(crime.isSolved() ? View.GONE : View.VISIBLE);
+            mSolvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
         }
 
         @Override
@@ -108,11 +130,12 @@ public class CrimeListFragment extends Fragment {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
 
             switch (viewType) {
-                case 0:
+                case VIEWTYPE_DOESNT_REQUIRE_POLICE:
                     return new CrimeHolder(layoutInflater, viewGroup);
-                case 1:
+                case VIEWTYPE_REQUIRES_POLICE:
                     return new PoliceCrimeHolder(layoutInflater, viewGroup);
                 default:
+                    // Default is not police required
                     return new CrimeHolder(layoutInflater, viewGroup);
             }
         }
@@ -137,13 +160,12 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemViewType(int position) {
             Crime crime = mCrimes.get(position);
+
             if (crime.requiresPolice() == true) {
-                // Requires police
-                return 1;
+                return VIEWTYPE_REQUIRES_POLICE;
             }
             else{
-                // Does not require police
-                return 0;
+                return VIEWTYPE_DOESNT_REQUIRE_POLICE;
             }
         }
     }
