@@ -90,7 +90,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View view) {
             clickedPosition = getAdapterPosition();
-            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
+            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
             startActivity(intent);
         }
     }
@@ -134,7 +134,7 @@ public class CrimeListFragment extends Fragment {
                 Toast.makeText(getActivity(), "Police contacted for crime " + mCrime.getTitle(), Toast.LENGTH_SHORT).show();
             }
             else {
-                Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
+                Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
                 startActivity(intent);
             }
         }
