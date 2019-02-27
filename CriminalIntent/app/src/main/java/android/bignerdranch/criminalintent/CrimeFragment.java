@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
@@ -33,6 +34,8 @@ public class CrimeFragment extends Fragment {
     private Button mDateButton;
     private Button mTimeButton;
     private CheckBox mSolvedCheckbox;
+    private CheckBox mRequiresPoliceCheckbox;
+    private FloatingActionButton mDeleteFAButton;
 
     public CrimeFragment() {
         // Required empty public constructor
@@ -120,6 +123,28 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+        // Requires Police Checkbox
+        mRequiresPoliceCheckbox = (CheckBox) view.findViewById(R.id.cb_requires_police);
+        mRequiresPoliceCheckbox.setChecked(mCrime.requiresPolice());
+        mRequiresPoliceCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                mCrime.setRequiresPolice(isChecked);
+            }
+        });
+
+        // Delete Floating Action Button
+        mDeleteFAButton = (FloatingActionButton) view.findViewById(R.id.fab_delete);
+
+        mDeleteFAButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CrimeLab.get(getActivity()).deleteCrime(mCrime);
+                getActivity().finish();
+            }
+        });
+
+        // Return view after view has been set up
         return view;
     }
 
