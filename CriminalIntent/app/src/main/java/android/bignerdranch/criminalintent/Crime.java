@@ -1,9 +1,11 @@
 package android.bignerdranch.criminalintent;
 
+import android.support.annotation.NonNull;
+
 import java.util.Date;
 import java.util.UUID;
 
-public class Crime {
+public class Crime implements Comparable<Crime> {
 
     // Read only
     private UUID mId;
@@ -18,9 +20,19 @@ public class Crime {
         mDate = new Date();
     }
 
+    public Crime(UUID uuid) {
+        mId = uuid;
+        mDate = new Date();
+    }
+
     // ID
     public UUID getId() {
         return mId;
+    }
+
+    @Override
+    public int compareTo(@NonNull Crime crime) {
+        return  mId.compareTo(crime.getId());
     }
 
     // Title

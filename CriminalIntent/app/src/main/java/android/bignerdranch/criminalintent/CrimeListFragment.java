@@ -1,5 +1,6 @@
 package android.bignerdranch.criminalintent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,6 +21,9 @@ import java.util.List;
 
 public class CrimeListFragment extends Fragment {
 
+    private int clickedPosition;
+    private static final String CLICKED_POSITION_ID = "clicked_position_id";
+
     private static final int VIEWTYPE_REQUIRES_POLICE = 1;
     private static final int VIEWTYPE_DOESNT_REQUIRE_POLICE = 0;
 
@@ -35,9 +39,25 @@ public class CrimeListFragment extends Fragment {
         mCrimeRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);
         mCrimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        if (savedInstanceState != null) {
+            clickedPosition = savedInstanceState.getInt(CLICKED_POSITION_ID);
+        }
+
         updateUI();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(CLICKED_POSITION_ID, clickedPosition);
     }
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -69,7 +89,9 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(getActivity(), mCrime.getTitle() + " clicked!", Toast.LENGTH_SHORT).show();
+            clickedPosition = getAdapterPosition();
+            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
+            startActivity(intent);
         }
     }
 
@@ -109,10 +131,11 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View view) {
             if (view.getId() == R.id.btn_contact_police) {
-                Toast.makeText(getActivity(), "Police contacted for " + mCrime.getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Police contacted for crime " + mCrime.getTitle(), Toast.LENGTH_SHORT).show();
             }
             else {
-                Toast.makeText(getActivity(), mCrime.getTitle() + " clicked!", Toast.LENGTH_SHORT).show();
+                Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
+                startActivity(intent);
             }
         }
     }
@@ -174,7 +197,12 @@ public class CrimeListFragment extends Fragment {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
-        mAdapter = new CrimeAdapter(crimes);
-        mCrimeRecyclerView.setAdapter(mAdapter);
+        if(mAdapter == null) {
+            mAdapter = new CrimeAdapter(crimes);
+            mCrimeRecyclerView.setAdapter(mAdapter);
+        }
+        else {
+            mAdapter.notifyItemChanged(clickedPosition);
+        }
     }
 }
