@@ -1,11 +1,16 @@
 package android.bignerdranch.criminalintent;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -31,6 +36,7 @@ public class CrimeListFragment extends Fragment {
 
     private static final int VIEWTYPE_REQUIRES_POLICE = 1;
     private static final int VIEWTYPE_DOESNT_REQUIRE_POLICE = 0;
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 999;
 
     private View mLayout;
     private Button mAddCrimeButton;
@@ -43,6 +49,32 @@ public class CrimeListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.READ_CONTACTS)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.READ_CONTACTS},
+                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            // Permission has already been granted
+        }
     }
 
     @Nullable
@@ -254,7 +286,7 @@ public class CrimeListFragment extends Fragment {
         public int getItemViewType(int position) {
             Crime crime = mCrimes.get(position);
 
-            if (crime.requiresPolice() == true) {
+            if (crime.requiresPolice()) {
                 return VIEWTYPE_REQUIRES_POLICE;
             }
             else{
@@ -263,16 +295,12 @@ public class CrimeListFragment extends Fragment {
         }
 
         public void setCrimes(List<Crime> crimes) {
-            //get the current items
-            int currentSize = mCrimes.size();
-            //remove the current items
-            mCrimes.clear();
-            //add all the new items
-            mCrimes.addAll(crimes);
-            //tell the recycler view that all the old items are gone
-            notifyItemRangeRemoved(0, currentSize);
-            //tell the recycler view how many new items we added
-            notifyItemRangeInserted(0, crimes.size());
+            // Diff Utils to handle list difference on crime deletion
+            DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CrimeDiffCallback(crimes, mCrimes));
+            diffResult.dispatchUpdatesTo(this);
+
+            // Swap out list of crimes displayed for new list
+            mCrimes = crimes;
         }
     }
 

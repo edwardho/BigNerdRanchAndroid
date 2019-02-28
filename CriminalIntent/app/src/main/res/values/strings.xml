@@ -25,4 +25,21 @@
     <!-- String for button to add crime -->
     <string name="report_crime_instruction">There are no crimes yet. To report a crime, please add crime.</string>
     <string name="add_crime">Add Crime</string>
+
+    <!-- String for button to report suspect and crime -->
+    <string name="crime_suspect_text">Choose Suspect</string>
+    <string name="call_suspect_text">Call Suspect</string>
+    <string name="crime_report_text">Send Crime Report</string>
+
+    <!-- Crime Report Details -->
+    <string name="crime_report">%1$s! The crime was discovered on %2$s. %3$s, %4$s, and %5$s</string>
+    <string name="crime_report_subject">Criminal Intent Crime Report</string>
+    <string name="crime_report_solved">The case is solved</string>
+    <string name="crime_report_unsolved">The case is not solved</string>
+    <string name="crime_report_requires_police">the case requires police</string>
+    <string name="crime_report_no_police">the case doesn\'t require police</string>
+    <string name="crime_report_suspect">the suspect is %s.</string>
+    <string name="crime_report_no_suspect">there is no suspect.</string>
+    <string name="send_report">Send crime report via</string>
+
 </resources>
