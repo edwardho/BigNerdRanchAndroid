@@ -16,8 +16,7 @@ public class Crime implements Comparable<Crime> {
     private boolean mRequiresPolice;
 
     public Crime() {
-        mId = UUID.randomUUID();
-        mDate = new Date();
+        this(UUID.randomUUID());
     }
 
     public Crime(UUID uuid) {

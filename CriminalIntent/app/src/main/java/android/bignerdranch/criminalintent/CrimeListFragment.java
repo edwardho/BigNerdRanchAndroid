@@ -261,6 +261,19 @@ public class CrimeListFragment extends Fragment {
                 return VIEWTYPE_DOESNT_REQUIRE_POLICE;
             }
         }
+
+        public void setCrimes(List<Crime> crimes) {
+            //get the current items
+            int currentSize = mCrimes.size();
+            //remove the current items
+            mCrimes.clear();
+            //add all the new items
+            mCrimes.addAll(crimes);
+            //tell the recycler view that all the old items are gone
+            notifyItemRangeRemoved(0, currentSize);
+            //tell the recycler view how many new items we added
+            notifyItemRangeInserted(0, crimes.size());
+        }
     }
 
     private void updateUI() {
@@ -274,6 +287,7 @@ public class CrimeListFragment extends Fragment {
             mCrimeRecyclerView.setAdapter(mAdapter);
         }
         else {
+            mAdapter.setCrimes(crimes);
             mAdapter.notifyItemChanged(mClickedPosition);
         }
 
