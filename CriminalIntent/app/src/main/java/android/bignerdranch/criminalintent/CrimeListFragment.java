@@ -1,8 +1,12 @@
 package android.bignerdranch.criminalintent;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +42,7 @@ public class CrimeListFragment extends Fragment {
     private static final int VIEWTYPE_REQUIRES_POLICE = 1;
     private static final int VIEWTYPE_DOESNT_REQUIRE_POLICE = 0;
     private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 999;
+    private static final int ACTION_STATE_SWIPE = 501;
 
     private View mLayout;
     private Button mAddCrimeButton;
@@ -44,6 +50,25 @@ public class CrimeListFragment extends Fragment {
     private CrimeAdapter mAdapter;
     private int mClickedPosition;
     private boolean mSubtitleVisible;
+    private Callbacks mCallbacks;
+    private OnDeleteCallback mDeleteCallback;
+
+    // Required interface for hosting activities
+    public interface Callbacks {
+        void onCrimeSelected(Crime crime);
+    }
+
+    // Required interface for deleting
+    public interface OnDeleteCallback {
+        void onCrimeIdSelected(UUID crimeId);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+        mDeleteCallback = (OnDeleteCallback) context;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,6 +123,8 @@ public class CrimeListFragment extends Fragment {
             mClickedPosition = savedInstanceState.getInt(CLICKED_POSITION_ID);
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
         }
+
+        setCrimeRecyclerViewItemTouchListener();
 
         updateUI();
 
@@ -162,6 +189,13 @@ public class CrimeListFragment extends Fragment {
         outState.putBoolean(SAVED_SUBTITLE_VISIBLE, mSubtitleVisible);
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
+        mDeleteCallback = null;
+    }
+
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Crime mCrime;
@@ -192,8 +226,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View view) {
             mClickedPosition = getAdapterPosition();
-            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getId());
-            startActivity(intent);
+            mCallbacks.onCrimeSelected(mCrime);
         }
     }
 
@@ -304,7 +337,7 @@ public class CrimeListFragment extends Fragment {
         }
     }
 
-    private void updateUI() {
+    public void updateUI() {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
@@ -325,8 +358,76 @@ public class CrimeListFragment extends Fragment {
     private void addNewCrime() {
         Crime crime = new Crime(UUID.randomUUID());
         CrimeLab.get(getActivity()).addCrime(crime);
-        Intent intent = CrimePagerActivity
-                .newIntent(getActivity(), crime.getId());
-        startActivity(intent);
+        updateUI();
+        mCallbacks.onCrimeSelected(crime);
     }
+
+    public void deleteCrime(UUID crimeId) {
+        CrimeLab.get(getActivity()).deleteCrime(crimeId);
+    }
+
+    public void setCrimeRecyclerViewItemTouchListener() {
+
+        ItemTouchHelper.SimpleCallback itemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                Crime crime= mAdapter.mCrimes.get(position);
+                mDeleteCallback.onCrimeIdSelected(crime.getId());
+
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas canvas, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
+                                    float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                // Get itemView
+                View itemView = viewHolder.itemView;
+
+                // Get background
+                ColorDrawable background = new ColorDrawable(getResources().getColor(R.color.colorAccent));
+
+                // Set background color offset
+                int backgroundCornerOffset = 20;
+
+                // Get delete icon from drawable folder
+                Drawable deleteIcon = ContextCompat.getDrawable(getContext(), R.drawable.ic_menu_delete);
+
+                // Get height and width from layout
+                int iconHeight = deleteIcon.getIntrinsicHeight();
+                int iconWidth = deleteIcon.getIntrinsicWidth();
+
+                int iconMargin = (int) (itemView.getHeight() - iconHeight) / 2;
+                int iconTop = (int) itemView.getTop() + (itemView.getHeight() - iconHeight) / 2;
+                int iconBottom = (int) iconTop + iconHeight;
+                int iconLeft = (int) itemView.getRight() - iconMargin - iconWidth;
+                int iconRight = (int) itemView.getRight() - iconMargin;
+
+                // Swiping to the left
+                if (dX < 0) {
+                    deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+
+                    background.setBounds(itemView.getRight() + ((int) dX) - backgroundCornerOffset,
+                            itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                }
+                // View is unSwiped
+                else {
+                    background.setBounds(0, 0, 0, 0);
+                }
+
+                background.draw(canvas);
+                deleteIcon.draw(canvas);
+
+                getDefaultUIUtil().onDraw(canvas, recyclerView, viewHolder.itemView, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+
+        ItemTouchHelper iteItemTouchHelper = new ItemTouchHelper(itemTouchCallback);
+        iteItemTouchHelper.attachToRecyclerView(mCrimeRecyclerView);
+    }
+
 }

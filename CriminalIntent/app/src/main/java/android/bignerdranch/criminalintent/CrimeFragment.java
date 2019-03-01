@@ -1,6 +1,7 @@
 package android.bignerdranch.criminalintent;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -63,9 +64,15 @@ public class CrimeFragment extends Fragment {
     private Button mCallSuspectButton;
     private Button mReportButton;
     private FloatingActionButton mDeleteFAButton;
+    private Callbacks mCallbacks;
 
     private String mSuspectId;
     private String mSuspectPhone;
+
+    // Required interface for hosting activities
+    public interface Callbacks {
+        void onCrimeUpdated(Crime crime);
+    }
 
     public CrimeFragment() {
         // Required empty public constructor
@@ -78,6 +85,12 @@ public class CrimeFragment extends Fragment {
         CrimeFragment crimeFragment = new CrimeFragment();
         crimeFragment.setArguments(args);
         return crimeFragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
     }
 
     @Override
@@ -94,6 +107,12 @@ public class CrimeFragment extends Fragment {
 
         CrimeLab.get(getActivity())
                 .updateCrime(mCrime);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
     }
 
     @Override
@@ -168,6 +187,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 mCrime.setTitle(charSequence.toString());
+                updateCrime();
             }
 
             @Override
@@ -213,6 +233,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 mCrime.setSolved(isChecked);
+                updateCrime();
             }
         });
 
@@ -223,6 +244,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 mCrime.setRequiresPolice(isChecked);
+                updateCrime();
             }
         });
 
@@ -286,13 +308,18 @@ public class CrimeFragment extends Fragment {
         // Delete Floating Action Button
         mDeleteFAButton = (FloatingActionButton) view.findViewById(R.id.fab_delete);
 
-        mDeleteFAButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CrimeLab.get(getActivity()).deleteCrime(mCrime);
-                getActivity().finish();
-            }
-        });
+        // Only want delete button visible if it's a part of CrimePagerActivity
+        if (getActivity() instanceof CrimePagerActivity){
+            mDeleteFAButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getActivity().finish();
+                }
+            });
+        }else{
+            // Delete button hidden in twopane, swipe functionality to delete
+            mDeleteFAButton.setVisibility(View.GONE);
+        }
 
         // Return view after view has been set up
         return view;
@@ -307,12 +334,14 @@ public class CrimeFragment extends Fragment {
             Date date = (Date) data
                     .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
+            updateCrime();
             updateTime();
         }
         else if (requestCode == REQUEST_TIME) {
             Date date = (Date) data
                     .getSerializableExtra(TimePickerFragment.EXTRA_TIME);
             mCrime.setDate(date);
+            updateCrime();
             updateTime();
         }
         else if (requestCode == REQUEST_CONTACT && data != null) {
@@ -378,8 +407,15 @@ public class CrimeFragment extends Fragment {
 
             getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
+            updateCrime();
             updatePhotoView();
         }
+    }
+
+    // updates Crime after a change has been made in the detail view on tablet, master/detail view
+    private void updateCrime() {
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
+        mCallbacks.onCrimeUpdated(mCrime);
     }
 
     private void updateDate() {

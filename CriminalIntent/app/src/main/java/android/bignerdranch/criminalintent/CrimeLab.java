@@ -39,12 +39,10 @@ public class CrimeLab {
         mDatabase.insert(CrimeDbSchema.CrimeTable.NAME, null, values);
     }
 
-    public void deleteCrime(Crime crime) {
-        String uuidString = crime.getId().toString();
-
+    public void deleteCrime(UUID crimeId) {
         mDatabase.delete(CrimeDbSchema.CrimeTable.NAME,
                 CrimeDbSchema.CrimeTable.Columns.UUID + " = ?",
-                new String[] { uuidString });
+                new String[] { crimeId.toString() });
     }
 
     public List<Crime> getCrimes() {
