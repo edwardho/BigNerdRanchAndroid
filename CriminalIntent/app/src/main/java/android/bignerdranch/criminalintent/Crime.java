@@ -79,4 +79,9 @@ public class Crime implements Comparable<Crime> {
     public void setSuspect(String suspect) {
         mSuspect = suspect;
     }
+
+    // get Photo
+    public String getPhotoFilename() {
+        return "IMG_" + getId().toString() + ".jpg";
+    }
 }
