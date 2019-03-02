@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App name -->
+    <string name="app_name">IntentoCriminal</string>
+
+    <!-- Crime detail values -->
+    <string name="crime_title_hint">Introduzca un título para el crimen.</string>
+    <string name="crime_title_label">Título</string>
+    <string name="crime_details_label">Detalles</string>
+    <string name="crime_solved_label">Solucionado</string>
+    <string name="requires_police_label">Requiere policia</string>
+
+    <!-- Date and Time picker titles -->
+    <string name="date_picker_title">Fecha del crimen:</string>
+    <string name="time_picker_title">Hora del crimen:</string>
+
+    <!-- Menu strings -->
+    <string name="new_crime">Crimen Nuevo</string>
+    <string name="show_subtitle">Mostrar Subtítulos</string>
+    <string name="hide_subtitle">Esconder Subtítulos</string>
+    <plurals name="subtitle_plural">
+        <item quantity="one">%1$s crimen</item>
+        <item quantity="other">%1$s crímenes</item>
+    </plurals>
+
+    <!-- Crime Pager Buttons -->
+    <string name="crime_pager_first">Primero</string>
+    <string name="crime_pager_last">Último</string>
+
+    <!-- String for button to add crime -->
+    <string name="report_crime_instruction">Todavía no hay crímenes. Para reportar un crimen, por favor agregue el crimen.</string>
+    <string name="add_crime">Añadir crimen</string>
+
+
+    <!-- String for button to report suspect and crime -->
+    <string name="crime_suspect_text">Elegir Sospechoso</string>
+    <string name="call_suspect_text">Llama al sospechoso</string>
+    <string name="crime_report_text">Enviar el Informe del Crimen</string>
+
+    <!-- Crime Report Details -->
+    <string name="crime_report">%1$s! El crimen fue descubierto el %2$s. %3$s, %4$s, and %5$s</string>
+    <string name="crime_report_subject">IntentoCriminal Informe del Crimen</string>
+    <string name="crime_report_solved">El caso está resuelto</string>
+    <string name="crime_report_unsolved">El caso no está resuelto</string>
+    <string name="crime_report_requires_police">el caso requiere policia</string>
+    <string name="crime_report_no_police">el caso no requiere policia</string>
+    <string name="crime_report_suspect">el/la sospechoso/a es %s.</string>
+    <string name="crime_report_no_suspect">no hay sospechoso.</string>
+    <string name="send_report">Enviar el informe del crimen a través de</string>
+</resources>
