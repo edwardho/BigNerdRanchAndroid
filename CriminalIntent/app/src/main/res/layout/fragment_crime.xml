@@ -17,7 +17,8 @@
         android:cropToPadding="true"
         android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/crime_photo_no_image_description"/>
 
     <ImageButton
         android:id="@+id/ib_crime_camera"
@@ -26,7 +27,9 @@
         android:src="@android:drawable/ic_menu_camera"
         app:layout_constraintEnd_toEndOf="@+id/iv_crime_photo"
         app:layout_constraintStart_toStartOf="@+id/iv_crime_photo"
-        app:layout_constraintTop_toBottomOf="@+id/iv_crime_photo" />
+        app:layout_constraintTop_toBottomOf="@+id/iv_crime_photo"
+        android:contentDescription="@string/crime_photo_button_description"
+        android:focusable="true" />
 
     <TextView
         android:id="@+id/tv_crime_title_label"
@@ -45,7 +48,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="16dp"/>
         android:inputType="text"
         android:text="@string/crime_title_hint"
         app:layout_constraintEnd_toEndOf="parent"

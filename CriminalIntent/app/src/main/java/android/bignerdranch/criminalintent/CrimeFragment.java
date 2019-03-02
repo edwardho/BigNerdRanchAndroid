@@ -498,6 +498,7 @@ public class CrimeFragment extends Fragment {
             if (mPhotoFile == null || !mPhotoFile.exists()) {
                 mPhotoView.setImageDrawable(null);
                 mPhotoView.setClickable(false);
+                mPhotoView.setContentDescription(getString(R.string.crime_photo_no_image_description));
             }
             else {
                 Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
@@ -530,6 +531,7 @@ public class CrimeFragment extends Fragment {
                 // Set image on Photo ImageView
                 mPhotoView.setImageBitmap(rotatedBitmap);
                 mPhotoView.setClickable(true);
+                mPhotoView.setContentDescription(getString(R.string.crime_photo_image_description));
             }
         }
         catch (IOException e) {

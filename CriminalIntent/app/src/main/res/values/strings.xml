@@ -8,6 +8,9 @@
     <string name="crime_details_label">Details</string>
     <string name="crime_solved_label">Solved</string>
     <string name="requires_police_label">Requires Police</string>
+    <string name="crime_photo_button_description">Take photo of crime scene</string>
+    <string name="crime_photo_no_image_description">Crime scene photo (not set)</string>
+    <string name="crime_photo_image_description">Crime scene photo (set)</string>
 
     <!-- Date and Time picker titles -->
     <string name="date_picker_title">Date of crime:</string>
@@ -45,5 +48,4 @@
     <string name="crime_report_suspect">the suspect is %s.</string>
     <string name="crime_report_no_suspect">there is no suspect.</string>
     <string name="send_report">Send crime report via</string>
-
 </resources>
