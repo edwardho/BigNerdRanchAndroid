@@ -27,4 +27,8 @@ public class SoundViewModel extends BaseObservable {
         // Notifies all bindable fields on our objects have been updated
         notifyChange();
     }
+
+    public void onButtonClicked() {
+        mBeatBox.play(mSound);
+    }
 }

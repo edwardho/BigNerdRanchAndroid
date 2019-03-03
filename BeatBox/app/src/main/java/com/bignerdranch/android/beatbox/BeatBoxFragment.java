@@ -29,6 +29,9 @@ public class BeatBoxFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Retains BeatBox instance to keep it alive between configuration change
+        setRetainInstance(true);
+
         // New instance of BeatBox in BeatBoxFragment
         mBeatBox = new BeatBox(getActivity());
     }
@@ -46,6 +49,13 @@ public class BeatBoxFragment extends Fragment {
         binding.recyclerView.setAdapter(new SoundAdapter(mBeatBox.getSounds()));
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Releases SoundPool
+        mBeatBox.release();
     }
 
     // SoundHolder hooked up to list_item_sound.xml
